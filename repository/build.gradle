@@ -1,0 +1,83 @@
+plugins {
+    id 'java'
+    id 'groovy'
+    id 'application'
+    id 'org.springframework.boot' version '2.2.4.RELEASE'
+    id 'nu.studer.jooq' version '4.0'
+    id 'org.flywaydb.flyway' version '6.2.3'
+}
+ext['jooq.version'] = '3.12.3'
+sourceCompatibility = 12
+apply plugin: "application"
+
+//this is dumb, why does it need this in every module???
+mainClassName = "com.project.hyperion.demo4.Demo4Application"
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+configurations {
+    flywayMigration
+}
+
+dependencies {
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: '2.2.4.RELEASE'
+    implementation group: 'org.jooq', name: 'jooq', version: '3.12.3'
+    compile ("org.postgresql:postgresql:42.2.5")
+//    implementation 'org.codehaus.groovy:groovy'
+
+    flywayMigration "org.postgresql:postgresql:42.2.5"
+//    implementation group: 'com.h2database', name: 'h2', version: '1.4.199'
+    jooqRuntime 'org.postgresql:postgresql:42.2.5'
+}
+
+jooq {
+    version = '3.12.3'
+    edition = 'OSS'
+    sample(sourceSets.main) {
+        jdbc {
+            driver = 'org.postgresql.Driver'
+            url = 'jdbc:postgresql://localhost:5433/demo4Db'
+            user = 'demo4user'
+            password = 'demo4password'
+            schema = 'hyperion'
+        }
+        generator {
+            name = 'org.jooq.codegen.DefaultGenerator'
+            strategy {
+                name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+            }
+            database {
+                name = 'org.jooq.meta.postgres.PostgresDatabase'
+            }
+            generate {
+                relations = true
+                deprecated = false
+                records = true
+                daos = true
+                fluentSetters = true
+            }
+            target {
+                packageName = 'src/main/java'
+                directory = "${this.project.projectDir}/src/main/generated"
+            }
+        }
+    }
+
+}
+
+
+flyway {
+    driver = 'org.postgresql.Driver'
+    url = 'jdbc:postgresql://localhost:5433/demo4Db'
+    user = 'demo4user'
+    password = 'demo4password'
+    schemas = ['hyperion']
+}
+
+//task generateJooq {
+//    depends on "generateModel"
+//}
+generateSampleJooqSchemaSource.dependsOn flywayMigrate

@@ -1,0 +1,26 @@
+plugins {
+//	id 'org.springframework.boot' version '2.2.5.RELEASE'
+//	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'groovy'
+}
+apply plugin: "application"
+mainClassName = "com.project.hyperion.demo4.Demo4Application"
+
+group = 'com.project.hyperion'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '12'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+//	implementation 'org.codehaus.groovy:groovy'
+//	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+//		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+//	}
+}
+
+test {
+	useJUnitPlatform()
+}
